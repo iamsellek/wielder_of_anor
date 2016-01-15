@@ -34,10 +34,10 @@ So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
 ## Setup
-To setup Wielder of Anor, pull it down to your computer and then open up
-config/example_config.yaml and follow the instructions in there. It's open for
-you to configure it to your liking, or you can just use the defaults I have
-listed.
+To setup Wielder of Anor, download it to your computer and unzip it to its own
+directory where you'd like. Then, open up config/example_config.yaml and follow
+the instructions in there. It's open for you to configure it to your liking, or
+you can just use the defaults I have listed.
 
 After you've set that up, put your forbidden words into the file you specified
 in forbidden_words_file_location, with each one separated by new lines. Here's
