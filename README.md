@@ -37,7 +37,7 @@ environment and need a reliable way to do this, use Wielder of Anor.
 To setup Wielder of Anor, pull it down to your computer and then open up
 config/example_config.yaml and follow the instructions in there. It's open for
 you to configure it to your liking, or you can just use the defaults I have
-listed. 
+listed.
 
 ## Use/What It Does
 To use Wielder of Anor, just run it *from within your code directory* (this is
