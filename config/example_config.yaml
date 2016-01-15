@@ -1,0 +1,15 @@
+###############################################################################
+###############################################################################
+## Here's what your config file should look like. Copy and paste the         ##
+## contents of this file to config/config.yaml and change the values below   ##
+## to your preferred values/locations. If you decide not to use the default  ##
+## for any of the following, make sure you add your custom file locations to ##
+## the .gitignore file.
+###############################################################################
+###############################################################################
+
+app_directory: # Parent Wielder of Anor directory.
+files_changed_file_location: # Location of your files_changed file. I have mine
+                             # at docs/files_changed.
+forbidden_words_file_location: # Location of your forbidden words file. I have
+                               # mine at docs/forbidden_words.
