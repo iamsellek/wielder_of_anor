@@ -33,21 +33,41 @@ Ahem. Sorry.
 So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
-## Use
+## Setup
+To setup Wielder of Anor, pull it down to your computer and then open up
+config/example_config.yaml and follow the instructions in there. It's open for
+you to configure it to your liking, or you can just use the defaults I have
+listed. 
+
+## Use/What It Does
 To use Wielder of Anor, just run it *from within your code directory* (this is
 important). You can pass in a couple of arguments here:
 
-* The first argument is your eventual commit message, if you've chosen to allow
-  Wielder of Anor itself to run your commits for you.
-* The second argument can only be '1'. If this argument is passed, Wielder of
-  Anor will 
+* The first argument is your eventual commit message (in quotes), if you've
+  chosen to allow Wielder of Anor itself to run your commits for you. It is
+  unnecessary if you've chosen not to allow it to run your commits for you.
+* The second argument can only be '1' and can only be added if there is a commit
+  message as the first argument. If this argument is passed, Wielder of Anor
+  will skip checking for any forbidden words whatsoever and jump straight to the
+  commit portion of the app. This is mainly here so that you can easily force a
+  commit after Wielder of Anor tells you of some forbidden words that you've
+  decided to allow for whatever reason. For instance, say 'puts' is one of your
+  forbidden words and there's a commented-out puts statement in your code
+  that you didn't put there and that, as such, you don't want to delete. It's
+  the only forbidden word showing up, so the rest of your code is clean. So,
+  instead of now having to type out a full git commit command, you can now just
+  hit your up arrow, hit the spacebar, type a '1' and hit enter.
   
-It'll run a bash command that'll export the result of a `git diff
-HEAD` (so all files in your local branch that are different from git HEAD) to a
-file. It'll then check every line in every one of those files for any of your
-forbidden words and print out the locations of any it finds.
+Once run, Wielder of Anor will run a bash command that'll export the result of a
+`git diff HEAD` (so all files in your local branch that are different from git
+HEAD) to a file. It'll then check every line in every one of those files for any
+of your forbidden words and print out the locations of any it finds.
 
-If it found none, you are good to go and can tell the app to then run the git
+If it found none (or if you've skipped the search and are forcing a commit), you
+are good to go and can tell the app to then run the git commit command, if
+you've opted to allow it to do so. At this point, Wielder of Anor will run a
+`git commit -a -m ` followed by your commit message (your first argument when
+running the app). Once it prints out "COMMITTED.", execution will end.
 
 ## Wielder of Anor? Wut.
 You know, the thing Gandalf calls himself to the Balrog as he's all "YOU SHALL
