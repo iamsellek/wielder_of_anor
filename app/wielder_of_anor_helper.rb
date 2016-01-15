@@ -19,11 +19,15 @@ class WielderOfAnorHelper
   
   def initialize(commit_message, force_commit, current_directory)
     config = YAML.load_file('config/config.yaml')
+    
     @app_directory = config['app_directory']
     @commit_message = commit_message
     @force_commit = force_commit
     @current_directory = current_directory
     @files_changed_file_location = config['files_changed_file_location']
+    
+    git_diff
+    
     @files_changed_file = File.open(@files_changed_file_location, "r")
     @forbidden_words = []
     
@@ -71,13 +75,13 @@ class WielderOfAnorHelper
         @forbidden_words.each do |word|
           if line.include?(word)
             found_forbidden = true
-            puts "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line}: --"
+            puts "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --"
             puts "   #{line.strip!}"
             puts "\n\n"
           end
         end
       end
-      
+      puts
       code_file.close
     end
     
@@ -86,8 +90,6 @@ class WielderOfAnorHelper
     @files_changed_file.close
     
     if found_forbidden
-      puts "*****************************************************************"
-      puts "\n\n"
       puts "REMOVE OFFENDING LINE(S) AND RE-RUN COMMIT STATEMENT OR RUN THIS "\
            "APP AGAIN WITH '1' AS YOUR SECOND ARGUMENT TO FORCE THE "\
            "COMMIT."
