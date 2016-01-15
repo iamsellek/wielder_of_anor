@@ -137,9 +137,12 @@ class WielderOfAnorHelper
 
     input = STDIN.gets.chomp.downcase
 
+    puts "\n\n"
+    
     if input == "yes" || input == "y"
-      bash("git commit -a -m #{@commit_message}")
+      bash("git commit -a -m '#{@commit_message}'")
       puts "COMMITED."
+      puts "\n\n"
     end
   end
 end
