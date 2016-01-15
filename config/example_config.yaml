@@ -13,3 +13,5 @@ files_changed_file_location: # Location of your files_changed file. I have mine
                              # at docs/files_changed.
 forbidden_words_file_location: # Location of your forbidden words file. I have
                                # mine at docs/forbidden_words.
+commit_for_user: # true if you want to allow Wielder of Anor to run the
+                 # 'git commit -am' command for you. false if otherwise.

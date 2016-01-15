@@ -25,6 +25,7 @@ class WielderOfAnorHelper
     @force_commit = force_commit
     @current_directory = current_directory
     @files_changed_file_location = config['files_changed_file_location']
+    @commit_for_user = config['commit_for_user']
     
     git_diff
     
@@ -35,13 +36,13 @@ class WielderOfAnorHelper
   end
   
   def bash(command)
-    # Dir.chdir ensures all bash/zsh commands are being run from the correct
+    # Dir.chdir ensures all bash commands are being run from the correct
     # directory.
     Dir.chdir(@app_directory) { system "#{command}" }
   end
   
   # Some commands need to be run through Shellwords.escape to actually run
-  # on bash/zsh.
+  # on bash.
   def bash_escaped(command)
     escaped_command = Shellwords.escape(command)
     Dir.chdir(@app_directory) { system "#{escaped_command}" }
@@ -61,34 +62,45 @@ class WielderOfAnorHelper
     forbidden_words_file.close
   end
   
-  def search_for_forbidden_words
+  def wielder_of_anor
     found_forbidden = false
     
     print_header_footer
     
-    @files_changed_file.each_line do |files_changed_line|
-      code_file = File.open("#{@current_directory}/#{files_changed_line.strip}", "r")
-      index = 0
-      
-      code_file.each_line do |line|
-        index += 1
-        @forbidden_words.each do |word|
-          if line.include?(word)
-            found_forbidden = true
-            puts "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --"
-            puts "   #{line.strip!}"
-            puts "\n\n"
+    # Don't bother checking if we're forcing the commit, since we're going to
+    # commit either way.
+    unless @force_commit
+      @files_changed_file.each_line do |files_changed_line|
+        code_file = File.open("#{@current_directory}/#{files_changed_line.strip}", "r")
+        index = 0
+        
+        code_file.each_line do |line|
+          index += 1
+          @forbidden_words.each do |word|
+            if line.include?(word)
+              found_forbidden = true
+              puts "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --"
+              puts "   #{line.strip!}"
+              puts "\n\n"
+            end
           end
         end
+        puts
+        code_file.close
       end
-      puts
-      code_file.close
+    else
+      puts "NOT SEARCHING FOR FORBIDDEN WORDS, PER USER INPUT."
+      puts "\n\n"
     end
     
     print_header_footer
     
     @files_changed_file.close
     
+    results(found_forbidden)
+  end
+  
+  def results(found_forbidden)
     if found_forbidden
       puts "REMOVE OFFENDING LINE(S) AND RE-RUN COMMIT STATEMENT OR RUN THIS "\
            "APP AGAIN WITH '1' AS YOUR SECOND ARGUMENT TO FORCE THE "\
@@ -98,11 +110,13 @@ class WielderOfAnorHelper
       File.delete(@files_changed_file)
       abort
     else
-      puts "FOUND 0 FORBIDDEN WORDS."
-      puts "\n\n"
+      unless @force_commit
+        puts "FOUND 0 FORBIDDEN WORDS."
+        puts "\n\n"
+      end
       
       File.delete(@files_changed_file)
-      commit
+      commit if @commit_for_user
     end
   end
   
@@ -112,12 +126,19 @@ class WielderOfAnorHelper
   end
   
   def commit
-    puts "OKAY TO COMMIT. SHOULD I RUN THE ACTUAL COMMIT NOW?"
+    if @force_commit
+      puts "SKIPPED CHECKING FOR FORBIDDEN WORDS. READY TO COMMIT NOW?"
+      puts "**YOU ARE FORCING THE COMMIT WITHOUT CHECKING FOR FORBIDDEN WORDS.**"
+    else
+      puts "OKAY TO COMMIT. SHOULD I RUN THE ACTUAL COMMIT NOW?"
+    end
+    
+    puts "PLEASE TYPE 'YES' OR 'Y' TO CONTINUE."
 
-    input = STDIN.gets.chomp
+    input = STDIN.gets.chomp.downcase
 
     if input == "yes" || input == "y"
-      bash("git commit -a -m #{commit_message}")
+      bash("git commit -a -m #{@commit_message}")
       puts "COMMITED."
     end
   end

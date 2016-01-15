@@ -34,8 +34,20 @@ So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
 ## Use
-Do things with this! Ha!
-*This section under construction...*
+To use Wielder of Anor, just run it *from within your code directory* (this is
+important). You can pass in a couple of arguments here:
+
+* The first argument is your eventual commit message, if you've chosen to allow
+  Wielder of Anor itself to run your commits for you.
+* The second argument can only be '1'. If this argument is passed, Wielder of
+  Anor will 
+  
+It'll run a bash command that'll export the result of a `git diff
+HEAD` (so all files in your local branch that are different from git HEAD) to a
+file. It'll then check every line in every one of those files for any of your
+forbidden words and print out the locations of any it finds.
+
+If it found none, you are good to go and can tell the app to then run the git
 
 ## Wielder of Anor? Wut.
 You know, the thing Gandalf calls himself to the Balrog as he's all "YOU SHALL
