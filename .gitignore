@@ -1,2 +1,3 @@
-forbidden_words
-files_changed
+docs/forbidden_words
+docs/files_changed
+config/config.yaml
