@@ -4,7 +4,7 @@
 ## contents of this file to config/config.yaml and change the values below   ##
 ## to your preferred values/locations. If you decide not to use the default  ##
 ## for any of the following, make sure you add your custom file locations to ##
-## the .gitignore file.
+## the .gitignore file.                                                      ##
 ###############################################################################
 ###############################################################################
 

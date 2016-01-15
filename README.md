@@ -34,25 +34,27 @@ So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
 ## Setup
-To setup Wielder of Anor, download it to your computer and unzip it to its own
-directory wherever you'd like. Then, open up config/example_config.yaml and
-follow the instructions in there. It's open for you to configure it to your
-liking, or you can just use the defaults I have listed.
+*Read this section and the "Use/What It Does" section before starting to actually
+do your setup.* This is important. Everything is explained in full here in the
+readme and starting the setup before finishing all this might lead to confusion!
+
+After reading the readme, download Wielder of Anor to your computer and unzip it
+to its own directory wherever you'd like. Then, open up
+config/example_config.yaml and follow the instructions in there. It's open for
+you to configure it to your liking, or you can just use the defaults I have
+listed.
 
 After you've set that up, put your forbidden words into the file you specified
-in forbidden_words_file_location, with each one separated by new lines. Here's
-a sample:
-
-```
-puts
-console
-log
-print
-```
+in forbidden_words_file_location, with each one separated by new lines. You can
+see a sample in docs/example_forbidden_words.
 
 ## Use/What It Does
-To use Wielder of Anor, just run it *from within your code directory* (this is
-important). You can pass in a couple of arguments here:
+To use Wielder of Anor, just run it *from within the code directory you want to
+run the forbidden words checks against* (this is important). A note: it does not
+*and should not* actually be *in* your code directory. From your code directory,
+just type `ruby #{full_path_to_wielder_of_anon.rb}` followed by the arguments. I
+have personally made an alias for doing this. Feel free to do that or type the
+full path each time as you desire. You can pass in a couple of arguments here:
 
 * The first argument is your eventual commit message (in quotes), if you've
   chosen to allow Wielder of Anor itself to run your commits for you. It is
