@@ -1,4 +1,4 @@
-# wielder_of_anor
+# Wielder of Anor
 Checks a user's staged files for "forbidden" words (as determined by the user)
 and, if any are found, alerts the user to the locations of said words.
 
