@@ -1,6 +1,0 @@
-binding
-pry
-test_output
-console.log
-Rails.logger.debug
-puts
