@@ -31,7 +31,7 @@ staying here if you slip up another time or two and...
 Ahem. Sorry.
 
 So. If you need to prevent anything in your code from making it past your dev
-environment and need a foolproof* way to do this, use Wielder of Anor.
+environment and need a reliable way to do this, use Wielder of Anor.
 
 ## Use
 Do things with this! Ha!
