@@ -39,6 +39,17 @@ config/example_config.yaml and follow the instructions in there. It's open for
 you to configure it to your liking, or you can just use the defaults I have
 listed.
 
+After you've set that up, put your forbidden words into the file you specified
+in forbidden_words_file_location, with each one separated by new lines. Here's
+a sample:
+
+```
+puts
+console
+log
+print
+```
+
 ## Use/What It Does
 To use Wielder of Anor, just run it *from within your code directory* (this is
 important). You can pass in a couple of arguments here:
