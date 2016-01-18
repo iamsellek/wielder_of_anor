@@ -41,7 +41,7 @@ and then run it!
 To use Wielder of Anor, just run it *from within the code directory you want to
 run the forbidden words checks against* (this is important). A note: it does not
 *and should not* actually be *in* your code directory. From your code directory,
-just type `ruby #{full_path_to_wielder_of_anon.rb}` followed by the arguments. I
+just type `ruby full_path_to_wielder_of_anon.rb` followed by the arguments. I
 have personally made an alias for doing this. Feel free to do that or type the
 full path each time as you desire. You can pass in a couple of arguments here.
 
@@ -58,8 +58,8 @@ The first argument can be:
   
 There is currently only one option for the second argument:
 
-* The second argument can only be '1' and *can only be added if there is a
-  commit message as the first argument.* If this argument is passed, Wielder of
+* The second argument can only be '1' and will be ignored unless there is a
+  commit message as the first argument. If this argument is passed, Wielder of
   Anor will skip checking for any forbidden words whatsoever and jump straight
   to the commit portion of the app. This is mainly here so that you can easily
   force a commit after Wielder of Anor tells you of some forbidden words that
@@ -73,13 +73,15 @@ There is currently only one option for the second argument:
 Once run, Wielder of Anor will run a bash command that'll export the result of a
 `git diff HEAD` (so all files in your local branch that are different from git
 HEAD) to a file. It'll then check every line in every one of those files for any
-of your forbidden words and print out the locations of any it finds.
+of your forbidden words and print out the locations of any and every one it
+finds.
 
 If it found none (or if you've skipped the search and are forcing a commit), you
 are good to go and can tell the app to then run the git commit command, if
 you've opted to allow it to do so. At this point, Wielder of Anor will run a
 `git commit -a -m ` followed by your commit message (your first argument when
-running the app). Once it prints out "COMMITTED.", execution will end.
+running the app). Once it prints out "COMMITTED.", execution will end. Don't
+forget to run your git push!
 
 ## Wielder of Anor? Wut.
 You know, the thing Gandalf calls himself to the Balrog as he's all "YOU SHALL
