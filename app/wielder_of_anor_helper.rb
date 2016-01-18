@@ -18,8 +18,9 @@ class WielderOfAnorHelper
   ##############################################################################
   
   def initialize(commit_message, force_commit, current_directory)
-    config = YAML.load_file('config/config.yaml')
+    first_run unless File.exists?('config/config.yaml')
     
+    config = YAML.load_file('config/config.yaml')
     @app_directory = config['app_directory']
     @commit_message = commit_message
     @force_commit = force_commit
@@ -33,6 +34,136 @@ class WielderOfAnorHelper
     @forbidden_words = []
     
     get_forbidden_words(config['forbidden_words_file_location'])
+  end
+  
+  def self.help
+    puts "Wielder of Anor can accept up to two parameters on run. The first"\
+         " parameter can be:"
+    puts "- Your eventual commit message (in quotes). Ignored if you have not"\
+         " allowed Wielder of Anor to commit for you."
+    puts "- help - You should already know what this does :)."
+    puts "- config - Re-runs the initial set up."
+    
+    abort
+  end
+  
+  def self.first_run
+    running_directory = File.expand_path(File.dirname(__FILE__)).chomp('/app')
+    
+    puts "Thanks for downloading Wielder of Anor! Let's run through the"\
+         " initial setup!"
+    puts "**Please ensure your file locations are correct. Wielder of Anor"\
+         " does not currently check your input for validity.**"
+         
+    app_directory = set_app_directory(running_directory)
+    
+    puts "\n\n"
+    
+    files_changed_file_location = set_files_changed_file_location(running_directory)
+    
+    puts "\n\n"
+    
+    forbidden_words_file_location = set_forbidden_words_file_location(running_directory)
+         
+    puts "\n\n"
+    
+    commit_for_user = set_commit_for_user
+    
+    set_configs(app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
+    
+    puts "\n\n"
+    
+    set_forbidden_words(forbidden_words_file_location)
+  end
+  
+  def self.set_app_directory(running_directory)
+    puts "Please copy and paste the location of the parent Wielder of Anor"\
+         " directory."
+    puts "(Just hit enter to accept the directory it's currently located,"\
+         " which is #{running_directory}.)"
+    app_directory = STDIN.gets.strip!
+    app_directory = running_directory if app_directory == ""
+    
+    app_directory
+  end
+  
+  def self.set_files_changed_file_location(running_directory)
+    puts "Whenever you run Wielder of Anor, it will first run a git diff and"\
+         " export the results to a file (so that it's only checking the files"\
+         " you have actually changed and not your entire code base!). Where"\
+         " would you like that file to be located?"
+    puts "(Just hit enter to accept the default, which is"\
+         " #{running_directory}/docs/files_changed.)"
+    files_changed_file_location = STDIN.gets.strip!
+    files_changed_file_location = "#{running_directory}/docs/files_changed" if files_changed_file_location == ""
+    
+    files_changed_file_location
+  end
+  
+  def self.set_forbidden_words_file_location(running_directory)
+    puts "Your 'forbidden words' are stored in a file. Where would like that"\
+         " file to be located?"
+    puts "(Just hit enter to accept the default, which is"\
+         " #{running_directory}/docs/forbidden_words.)"
+    forbidden_words_file_location = STDIN.gets.strip!
+    forbidden_words_file_location = "#{running_directory}/docs/forbidden_words" if forbidden_words_file_location == ""
+    
+    forbidden_words_file_location
+  end
+  
+  def self.set_commit_for_user
+    puts "Would you like Wielder of Anor to run your commits for you once you"\
+         " have verified that your code is free of forbidden words?"
+    puts "('yes' or 'no'. Just hitting enter defaults to no.)"
+    commit_for_user = STDIN.gets.strip!.downcase
+    commit_for_user = "no" if commit_for_user == ""
+    
+    commit_for_user
+  end
+  
+  def self.set_configs(app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
+    config = {}
+    
+    config["app_directory"] = app_directory
+    config["files_changed_file_location"] = files_changed_file_location
+    config["forbidden_words_file_location"] = forbidden_words_file_location
+    
+    if commit_for_user == "yes" || commit_for_user == "y"
+      config["commit_for_user"] = true
+    elsif commit_for_user == "no" || commit_for_user == "n"
+      config["commit_for_user"] = false
+    end
+    
+    File.open("config/config.yaml", "w") { |f| YAML.dump(config, f) }
+  end
+  
+  def self.set_forbidden_words(forbidden_words_file_location)
+    forbidden_words_file = File.open(forbidden_words_file_location, "w")
+    
+    done = false
+    puts "Great! Now that we're done with the files, let's add your forbidden"\
+         " words from here!"
+         
+    while !done do
+      puts "Enter a forbidden word and hit enter. If you are done entering"\
+           " forbidden words, type 'x211' and hit enter instead."
+      word = STDIN.gets.strip!
+      
+      puts "\n\n"
+      
+      if word == "x211"
+        done = true
+      else
+        forbidden_words_file.puts word
+      end
+    end
+    
+    forbidden_words_file.close
+    
+    puts "And with that, we're done! Feel free to run Wielder of Anor again if"\
+         " you'd like to check your code now!"
+    
+    abort
   end
   
   def bash(command)

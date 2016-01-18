@@ -34,19 +34,8 @@ So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
 ## Setup
-*Read this section and the "Use/What It Does" section before starting to actually
-do your setup.* This is important. Everything is explained in full here in the
-readme and starting the setup before finishing all this might lead to confusion!
-
-After reading the readme, download Wielder of Anor to your computer and unzip it
-to its own directory wherever you'd like. Then, open up
-config/example_config.yaml and follow the instructions in there. It's open for
-you to configure it to your liking, or you can just use the defaults I have
-listed.
-
-After you've set that up, put your forbidden words into the file you specified
-in forbidden_words_file_location, with each one separated by new lines. You can
-see a sample in docs/example_forbidden_words.
+Setup is simple! Just download Wielder of Anor to the location of your choosing
+and then run it!
 
 ## Use/What It Does
 To use Wielder of Anor, just run it *from within the code directory you want to
@@ -54,22 +43,32 @@ run the forbidden words checks against* (this is important). A note: it does not
 *and should not* actually be *in* your code directory. From your code directory,
 just type `ruby #{full_path_to_wielder_of_anon.rb}` followed by the arguments. I
 have personally made an alias for doing this. Feel free to do that or type the
-full path each time as you desire. You can pass in a couple of arguments here:
+full path each time as you desire. You can pass in a couple of arguments here.
 
-* The first argument is your eventual commit message (in quotes), if you've
-  chosen to allow Wielder of Anor itself to run your commits for you. It is
-  unnecessary if you've chosen not to allow it to run your commits for you.
-* The second argument can only be '1' and can only be added if there is a commit
-  message as the first argument. If this argument is passed, Wielder of Anor
-  will skip checking for any forbidden words whatsoever and jump straight to the
-  commit portion of the app. This is mainly here so that you can easily force a
-  commit after Wielder of Anor tells you of some forbidden words that you've
-  decided to allow for whatever reason. For instance, say 'puts' is one of your
-  forbidden words and there's a commented-out puts statement in your code
-  that you didn't put there and that, as such, you don't want to delete. It's
-  the only forbidden word showing up, so the rest of your code is clean. So,
-  instead of now having to type out a full git commit command, you can now just
-  hit your up arrow, hit the spacebar, type a '1' and hit enter.
+The first argument can be:
+
+* Your eventual commit message (in quotes), if you've chosen to allow Wielder
+  of Anor itself to run your commits for you. If you've chosen to *not* allow it
+  to run your commits for you, this argument will be ignored.
+* 'help' - This will simply print out shorter versions of the options you are
+  currently reading.
+* 'config' - This will re-run the configuration process. IF YOU SET ANY OF YOUR
+  FILE LOCATIONS TO POINT TO PREVIOUSLY EXISTING FILES, THOSE FILES *WILL* BE
+  OVERWRITTEN.
+  
+There is currently only one option for the second argument:
+
+* The second argument can only be '1' and *can only be added if there is a
+  commit message as the first argument.* If this argument is passed, Wielder of
+  Anor will skip checking for any forbidden words whatsoever and jump straight
+  to the commit portion of the app. This is mainly here so that you can easily
+  force a commit after Wielder of Anor tells you of some forbidden words that
+  you've decided to allow for whatever reason. For instance, say 'puts' is one
+  of your forbidden words and there's a commented-out puts statement in your
+  code that you didn't put there and that, as such, you don't want to delete.
+  It's the only forbidden word showing up, so the rest of your code is clean.
+  So, instead of now having to type out a full git commit command, you can now
+  just hit your up arrow, hit the spacebar, type a '1' and hit enter.
   
 Once run, Wielder of Anor will run a bash command that'll export the result of a
 `git diff HEAD` (so all files in your local branch that are different from git
