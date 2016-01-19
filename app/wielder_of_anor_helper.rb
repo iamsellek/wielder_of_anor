@@ -17,16 +17,20 @@ class WielderOfAnorHelper
   ##############################################################################
   ##############################################################################
   
-  def initialize(commit_message, force_commit, current_directory)
-    first_run unless File.exists?('config/config.yaml')
+  def initialize(commit_message, force_commit)
+    @app_directory = File.expand_path(File.dirname(__FILE__)).chomp('/app')
     
-    config = YAML.load_file('config/config.yaml')
-    @app_directory = config['app_directory']
+    first_run unless File.exists?("#{@app_directory}/config/config.yaml")
+    
+    config = YAML.load_file("#{@app_directory}/config/config.yaml")
     @commit_message = commit_message
     @force_commit = force_commit
-    @current_directory = current_directory
+    @current_directory = Dir.pwd
     @files_changed_file_location = config['files_changed_file_location']
     @commit_for_user = config['commit_for_user']
+    
+    # Don't want to use a previous version.
+    File.delete(@files_changed_file_location) if File.exists?(@files_changed_file_location)
     
     git_diff
     
@@ -47,23 +51,17 @@ class WielderOfAnorHelper
     abort
   end
   
-  def self.first_run
-    running_directory = File.expand_path(File.dirname(__FILE__)).chomp('/app')
-    
+  def first_run
     puts "Thanks for downloading Wielder of Anor! Let's run through the"\
          " initial setup!"
     puts "**Please ensure your file locations are correct. Wielder of Anor"\
          " does not currently check your input for validity.**"
-         
-    app_directory = set_app_directory(running_directory)
+    
+    files_changed_file_location = set_files_changed_file_location(@app_directory)
     
     puts "\n\n"
     
-    files_changed_file_location = set_files_changed_file_location(running_directory)
-    
-    puts "\n\n"
-    
-    forbidden_words_file_location = set_forbidden_words_file_location(running_directory)
+    forbidden_words_file_location = set_forbidden_words_file_location(@app_directory)
          
     puts "\n\n"
     
@@ -76,7 +74,7 @@ class WielderOfAnorHelper
     set_forbidden_words(forbidden_words_file_location)
   end
   
-  def self.set_app_directory(running_directory)
+  def set_app_directory(running_directory)
     puts "Please copy and paste the location of the parent Wielder of Anor"\
          " directory."
     puts "(Just hit enter to accept the directory it's currently located,"\
@@ -87,7 +85,7 @@ class WielderOfAnorHelper
     app_directory
   end
   
-  def self.set_files_changed_file_location(running_directory)
+  def set_files_changed_file_location(running_directory)
     puts "Whenever you run Wielder of Anor, it will first run a git diff and"\
          " export the results to a file (so that it's only checking the files"\
          " you have actually changed and not your entire code base!). Where"\
@@ -100,7 +98,7 @@ class WielderOfAnorHelper
     files_changed_file_location
   end
   
-  def self.set_forbidden_words_file_location(running_directory)
+  def set_forbidden_words_file_location(running_directory)
     puts "Your 'forbidden words' are stored in a file. Where would like that"\
          " file to be located?"
     puts "(Just hit enter to accept the default, which is"\
@@ -111,7 +109,7 @@ class WielderOfAnorHelper
     forbidden_words_file_location
   end
   
-  def self.set_commit_for_user
+  def set_commit_for_user
     puts "Would you like Wielder of Anor to run your commits for you once you"\
          " have verified that your code is free of forbidden words?"
     puts "('yes' or 'no'. Just hitting enter defaults to no.)"
@@ -121,7 +119,7 @@ class WielderOfAnorHelper
     commit_for_user
   end
   
-  def self.set_configs(app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
+  def set_configs(app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
     config = {}
     
     config["app_directory"] = app_directory
@@ -137,7 +135,7 @@ class WielderOfAnorHelper
     File.open("config/config.yaml", "w") { |f| YAML.dump(config, f) }
   end
   
-  def self.set_forbidden_words(forbidden_words_file_location)
+  def set_forbidden_words(forbidden_words_file_location)
     forbidden_words_file = File.open(forbidden_words_file_location, "w")
     
     done = false
@@ -169,14 +167,14 @@ class WielderOfAnorHelper
   def bash(command)
     # Dir.chdir ensures all bash commands are being run from the correct
     # directory.
-    Dir.chdir(@app_directory) { system "#{command}" }
+    Dir.chdir(@current_directory) { system "#{command}" }
   end
   
   # Some commands need to be run through Shellwords.escape to actually run
   # on bash.
   def bash_escaped(command)
     escaped_command = Shellwords.escape(command)
-    Dir.chdir(@app_directory) { system "#{escaped_command}" }
+    Dir.chdir(@current_directory) { system "#{escaped_command}" }
   end
   
   def git_diff
