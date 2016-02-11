@@ -269,7 +269,7 @@ class WielderOfAnorHelper
     puts "\n\n"
     
     if input == "yes" || input == "y"
-      bash("git commit -a -m '#{@commit_message}'")
+      bash('git commit -a -m "#{@commit_message}"')
       puts "\n\n"
       puts "COMMITED."
       puts "\n\n"
