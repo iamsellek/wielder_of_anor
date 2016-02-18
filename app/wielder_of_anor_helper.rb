@@ -67,7 +67,7 @@ class WielderOfAnorHelper
     
     commit_for_user = set_commit_for_user
     
-    set_configs(app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
+    set_configs(@app_directory, files_changed_file_location, forbidden_words_file_location, commit_for_user)
     
     puts "\n\n"
     
