@@ -174,6 +174,7 @@ class WielderOfAnorHelper
 
   # Some commands need to be run through Shellwords.escape to actually run
   # on bash.
+  # TODO Deprecate this - looks like it's unnecessary.
   def bash_escaped(command)
     escaped_command = Shellwords.escape(command)
     Dir.chdir(@current_directory) { system "#{escaped_command}" }
@@ -216,7 +217,7 @@ class WielderOfAnorHelper
             end
           end
         end
-        puts
+        
         code_file.close
       end
     else
