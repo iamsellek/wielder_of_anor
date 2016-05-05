@@ -1,3 +1,4 @@
 docs/forbidden_words
 docs/files_changed
 config/config.yaml
+Gemfile.lock

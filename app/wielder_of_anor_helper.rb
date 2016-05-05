@@ -217,7 +217,7 @@ class WielderOfAnorHelper
             end
           end
         end
-        
+
         code_file.close
       end
     else
@@ -272,7 +272,7 @@ class WielderOfAnorHelper
     puts "\n\n"
 
     if input == "yes" || input == "y"
-      bash(%Q[git commit -a -m "#{@commit_message}"])
+      bash(%Q[git commit -m "#{@commit_message}"])
       puts "\n\n"
       puts "COMMITED."
       puts "\n\n"
