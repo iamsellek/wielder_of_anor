@@ -181,7 +181,7 @@ class WielderOfAnorHelper
   end
 
   def git_diff
-    bash("git diff HEAD  --name-only > #{@files_changed_file_location}")
+    bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
   end
 
   def get_forbidden_words(file_location)
