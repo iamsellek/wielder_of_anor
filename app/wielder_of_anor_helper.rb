@@ -172,14 +172,6 @@ class WielderOfAnorHelper
     Dir.chdir(@current_directory) { system "#{command}" }
   end
 
-  # Some commands need to be run through Shellwords.escape to actually run
-  # on bash.
-  # TODO Deprecate this - looks like it's unnecessary.
-  def bash_escaped(command)
-    escaped_command = Shellwords.escape(command)
-    Dir.chdir(@current_directory) { system "#{escaped_command}" }
-  end
-
   def git_diff
     bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
   end
@@ -199,9 +191,20 @@ class WielderOfAnorHelper
 
     print_header_footer
 
-    # Don't bother checking if we're forcing the commit, since we're going to
-    # commit either way.
+    # If we're forcing the commit, don't bother checking for forbidden words.
     unless @force_commit
+      count = File.foreach(@files_changed_file).inject(0) {|c, line| c+1}
+
+      if count == 0
+        puts 'No files have been added. Please use the git add command to add'\
+             ' files to your commit.'
+        puts "\n\n"
+
+        print_header_footer
+
+        abort
+      end
+
       @files_changed_file.each_line do |files_changed_line|
         code_file = File.open("#{@current_directory}/#{files_changed_line.strip}", "r")
         index = 0
