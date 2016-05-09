@@ -71,15 +71,15 @@ There is currently only one option for the second argument:
   just hit your up arrow, hit the spacebar, type a '1' and hit enter.
   
 Once run, Wielder of Anor will run a bash command that'll export the result of a
-`git diff HEAD` (so all files in your local branch that are different from git
-HEAD) to a file. It'll then check every line in every one of those files for any
-of your forbidden words and print out the locations of any and every one it
-finds.
+`git diff HEAD --staged --name-only` (so all files that you have 'git add'ed
+since git HEAD) to a file. It'll then check every line in every one of those
+files for any of your forbidden words and print out the locations of any and
+every one it finds.
 
 If it found none (or if you've skipped the search and are forcing a commit), you
 are good to go and can tell the app to then run the git commit command, if
 you've opted to allow it to do so. At this point, Wielder of Anor will run a
-`git commit -a -m ` followed by your commit message (your first argument when
+`git commit -m ` followed by your commit message (your first argument when
 running the app). Once it prints out "COMMITTED.", execution will end. Don't
 forget to run your git push!
 
