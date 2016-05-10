@@ -234,7 +234,7 @@ class WielderOfAnorHelper
       print_header_footer
     else
       lines_pretty_print Rainbow('NOT SEARCHING FOR FORBIDDEN WORDS, PER USER INPUT.').red
-      double_space
+      single_space
     end
 
     @files_changed_file.close
@@ -244,11 +244,11 @@ class WielderOfAnorHelper
 
   def results(found_forbidden)
     if found_forbidden
-      double_space
+      single_space
       lines_pretty_print 'Remove offending line(s) and re-run commit statement or run this '\
                          'app again with \'1\' as your second argument to force the commit.'
 
-      double_space
+      single_space
       lines_pretty_print Rainbow('**ONLY FORCE THE COMMIT IF YOU ARE SURE YOU ARE 100% SURE YOU WANT '\
                                  'TO COMMIT THE ABOVE LINES TO YOUR BRANCH!!**').red
       File.delete(@files_changed_file)
@@ -277,11 +277,13 @@ class WielderOfAnorHelper
 
     lines_pretty_print 'Please type \'yes\' OR \'y\' to continue. Any other input will be treated as a \'no\'.'
 
+    single_space
+
     input = STDIN.gets.chomp.downcase
 
     if input == 'yes' || input == 'y'
       bash(%Q[git commit -m "#{@commit_message}"])
-      double_space
+      single_space
       lines_pretty_print 'Committed.'
     end
   end
