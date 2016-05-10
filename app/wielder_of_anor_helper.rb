@@ -285,6 +285,7 @@ class WielderOfAnorHelper
       bash(%Q[git commit -m "#{@commit_message}"])
       single_space
       lines_pretty_print 'Committed.'
+      single_space
     end
   end
 
