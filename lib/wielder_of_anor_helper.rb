@@ -290,7 +290,7 @@ class WielderOfAnorHelper
   end
 
   def set_app_directory
-    @app_directory = File.expand_path(File.dirname(__FILE__)).chomp('/app')
+    @app_directory = File.expand_path(File.dirname(__FILE__)).chomp('/lib')
   end
 
   def lines_pretty_print(string)
