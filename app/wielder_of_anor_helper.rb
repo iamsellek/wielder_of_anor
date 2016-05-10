@@ -176,12 +176,6 @@ class WielderOfAnorHelper
     abort
   end
 
-  def bash(command)
-    # Dir.chdir ensures all bash commands are being run from the correct
-    # directory.
-    Dir.chdir(@current_directory) { system "#{command}" }
-  end
-
   def git_diff
     bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
   end
@@ -287,6 +281,12 @@ class WielderOfAnorHelper
       lines_pretty_print 'Committed.'
       single_space
     end
+  end
+
+  def bash(command)
+    # Dir.chdir ensures all bash commands are being run from the correct
+    # directory.
+    Dir.chdir(@current_directory) { system "#{command}" }
   end
 
   def set_app_directory
