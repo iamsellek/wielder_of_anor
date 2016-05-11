@@ -279,6 +279,8 @@ class WielderOfAnorHelper
     if @force_commit
       lines_pretty_print 'Skipped checking for forbidden words. Ready to commit now?'
       lines_pretty_print Rainbow('**WARNING: YOU ARE FORCING THE COMMIT WITHOUT CHECKING FOR FORBIDDEN WORDS.**').red
+
+      single_space
     else
       lines_pretty_print 'Okay to commit! Should I go ahead and run the actual commit now?'
     end
