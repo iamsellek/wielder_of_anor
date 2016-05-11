@@ -198,13 +198,21 @@ class WielderOfAnorHelper
       count = File.foreach(@files_changed_file).inject(0) {|c, line| c+1}
 
       if count == 0
-        lines_pretty_print 'No files have been added. Please use the git add command to add files to your '\
-                           'commit.'
+        single_space
+
+        lines_pretty_print Rainbow('No files have been added. Please use the git add command to add files to your '\
+                           'commit.').red
+
+        single_space
 
         abort
       end
 
+      single_space
+
       print_header_footer
+
+      single_space
 
       @files_changed_file.each_line do |files_changed_line|
         code_file = File.open("#{@current_directory}/#{files_changed_line.strip}", "r")
@@ -225,7 +233,11 @@ class WielderOfAnorHelper
         code_file.close
       end
 
+      single_space
+
       print_header_footer
+
+      single_space
     else
       lines_pretty_print Rainbow('NOT SEARCHING FOR FORBIDDEN WORDS, PER USER INPUT.').red
       single_space
@@ -249,7 +261,9 @@ class WielderOfAnorHelper
       abort
     else
       unless @force_commit
-        lines_pretty_print 'FOUND 0 FORBIDDEN WORDS.'
+        lines_pretty_print Rainbow('Found 0 forbidden words!').green
+
+        single_space
       end
 
       File.delete(@files_changed_file)
@@ -271,9 +285,9 @@ class WielderOfAnorHelper
 
     lines_pretty_print 'Please type \'yes\' OR \'y\' to continue. Any other input will be treated as a \'no\'.'
 
-    single_space
-
     input = STDIN.gets.chomp.downcase
+
+    single_space
 
     if input == 'yes' || input == 'y'
       bash(%Q[git commit -m "#{@commit_message}"])
