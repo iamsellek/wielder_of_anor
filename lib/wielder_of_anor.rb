@@ -2,9 +2,11 @@ require_relative "wielder_of_anor_helper"
 
 helper = WielderOfAnorHelper.new
 
-helper.help if ARGV[0] == "help"
+helper.help if ARGV[0] == 'help'
 
-helper.first_run if ARGV[0] == "config"
+helper.first_run if ARGV[0] == 'config'
+
+helper.output_forbidden_words if ARGV[0] == 'words'
 
 helper.prepare(ARGV[0], ARGV[1])
 

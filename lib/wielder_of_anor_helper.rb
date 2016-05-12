@@ -16,6 +16,12 @@ class WielderOfAnorHelper
   ##############################################################################
   ##############################################################################
 
+  def initialize
+    set_app_directory
+
+    @forbidden_words = []
+  end
+
   def prepare(commit_message, force_commit)
     set_app_directory
 
@@ -34,7 +40,6 @@ class WielderOfAnorHelper
     git_diff
 
     @files_changed_file = File.open(@files_changed_file_location, "r")
-    @forbidden_words = []
 
     get_forbidden_words(config['forbidden_words_file_location'])
   end
@@ -58,6 +63,32 @@ class WielderOfAnorHelper
 
     lines_pretty_print '- You have allowed Wielder of Anor to run commits for you.'
     lines_pretty_print '- Your first parameter is your commit message.'
+
+    abort
+  end
+
+  def output_forbidden_words
+    set_app_directory
+    config = YAML.load_file("#{@app_directory}/config/config.yaml")
+
+    unless config
+      lines_pretty_print Rainbow('You have yet to set your forbidden words! Please run the app with the parameter '\
+                                 '\'config\' to set up your configurations and forbidden words.').red
+
+      abort
+    end
+
+    get_forbidden_words(config['forbidden_words_file_location'])
+
+    lines_pretty_print Rainbow('Your forbidden words are:').yellow
+
+    single_space
+
+    @forbidden_words.each do |word|
+      lines_pretty_print Rainbow(word).yellow
+    end
+
+    single_space
 
     abort
   end
