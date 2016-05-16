@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.license        = 'MIT'
 
   spec.files          = `git ls-files`.split($/)
-  spec.executables    = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.executables    = ['wielder_of_anor']
   spec.test_files     = []
   spec.require_paths  = ['lib']
 

@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'wielder_of_anor'
+
+woa = WielderOfAnor::WielderOfAnor.new
+
+woa.help if ARGV[0] == 'help'
+
+woa.first_run if ARGV[0] == 'config'
+
+woa.output_forbidden_words if ARGV[0] == 'words'
+
+woa.prepare(ARGV[0], ARGV[1])
+
+woa.wielder_of_anor
