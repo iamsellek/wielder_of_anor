@@ -33,17 +33,15 @@ Ahem. Sorry.
 So. If you need to prevent anything in your code from making it past your dev
 environment and need a reliable way to do this, use Wielder of Anor.
 
-## Setup
-Setup is simple! Just download Wielder of Anor to the location of your choosing
-and then run it!
+## Installation
+Installation is simple! Just run a `gem install wielder_of_anor`, then run
+`wielder_of_anor` and follow the instructions. You're now good to go!
 
 ## Use/What It Does
 To use Wielder of Anor, just run it *from within the code directory you want to
-run the forbidden words checks against* (this is important). A note: it does not
-*and should not* actually be *in* your code directory. From your code directory,
-just type `ruby full_path_to_wielder_of_anon.rb` followed by the arguments. I
-have personally made an alias for doing this. Feel free to do that or type the
-full path each time as you desire. You can pass in a couple of arguments here.
+run the forbidden words checks against* (this is important). From your code
+directory, just type `wielder_of_anor` followed by your arguments. You can pass
+in a couple of arguments here.
 
 The first argument can be:
 
@@ -55,6 +53,8 @@ The first argument can be:
 * 'config' - This will re-run the configuration process. IF YOU SET ANY OF YOUR
   FILE LOCATIONS TO POINT TO PREVIOUSLY EXISTING FILES, THOSE FILES *WILL* BE
   OVERWRITTEN.
+* 'words' - This will spit out all of the forbidden words that you currently
+  are checking for.
   
 There is currently only one option for the second argument:
 
@@ -79,7 +79,7 @@ every one it finds.
 If it found none (or if you've skipped the search and are forcing a commit), you
 are good to go and can tell the app to then run the git commit command, if
 you've opted to allow it to do so. At this point, Wielder of Anor will run a
-`git commit -m ` followed by your commit message (your first argument when
+`git commit -m` followed by your commit message (your first argument when
 running the app). Once it prints out "COMMITTED.", execution will end. Don't
 forget to run your git push!
 
