@@ -168,7 +168,7 @@ module WielderOfAnor
         config['commit_for_user'] = false
       end
 
-      file = File.open("#{@app_directory}lib/config.yaml", 'w')
+      file = File.open("#{@app_directory}/lib/config.yaml", 'w')
       YAML.dump(config, file)
       file.close
     end
