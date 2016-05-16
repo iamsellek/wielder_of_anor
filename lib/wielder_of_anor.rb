@@ -26,9 +26,9 @@ module WielderOfAnor
     def prepare(commit_message, force_commit)
       set_app_directory
 
-      first_run unless File.exists?("#{@app_directory}/config/config.yaml")
+      first_run unless File.exists?("#{@app_directory}/lib/config.yaml")
 
-      config = YAML.load_file("#{@app_directory}/config/config.yaml")
+      config = YAML.load_file("#{@app_directory}/lib/config.yaml")
       @commit_message = commit_message
       @force_commit = force_commit
       @current_directory = Dir.pwd
@@ -70,7 +70,7 @@ module WielderOfAnor
 
     def output_forbidden_words
       set_app_directory
-      config = YAML.load_file("#{@app_directory}/config/config.yaml")
+      config = YAML.load_file("#{@app_directory}/lib/config.yaml")
 
       unless config
         lines_pretty_print Rainbow('You have yet to set your forbidden words! Please run the app with the parameter '\
@@ -123,9 +123,9 @@ module WielderOfAnor
            'you have actually changed and not your entire code base!). Where '\
            'would you like that file to be located?'
       lines_pretty_print Rainbow('(Just hit enter to accept the default, which is'\
-           " #{@app_directory}/docs/files_changed.)").yellow
+           " #{@app_directory}/lib/files_changed.)").yellow
       files_changed_file_location = STDIN.gets.strip!
-      files_changed_file_location = "#{@app_directory}/docs/files_changed" if files_changed_file_location == ''
+      files_changed_file_location = "#{@app_directory}/lib/files_changed" if files_changed_file_location == ''
 
       files_changed_file_location
     end
@@ -134,9 +134,9 @@ module WielderOfAnor
       lines_pretty_print 'Your \'forbidden words\' are stored in a file. Where would like that'\
            ' file to be located?'
       lines_pretty_print Rainbow('(Just hit enter to accept the default, which is'\
-           " #{@app_directory}/docs/forbidden_words.)").yellow
+           " #{@app_directory}/lib/forbidden_words.)").yellow
       forbidden_words_file_location = STDIN.gets.strip!
-      forbidden_words_file_location = "#{@app_directory}/docs/forbidden_words" if forbidden_words_file_location == ""
+      forbidden_words_file_location = "#{@app_directory}/lib/forbidden_words" if forbidden_words_file_location == ""
 
       forbidden_words_file_location
     end
@@ -168,7 +168,7 @@ module WielderOfAnor
         config['commit_for_user'] = false
       end
 
-      file = File.open('config/config.yaml', 'w')
+      file = File.open('lib/config.yaml', 'w')
       YAML.dump(config, file)
       file.close
     end
