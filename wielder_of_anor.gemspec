@@ -1,19 +1,27 @@
-Gem::Specification.new do |s|
-  s.name           = 'wielder_of_anor'
-  s.version        = '0.1.0'
-  s.authors        = ['Chris Sellek']
-  s.email          = ['iamsellek@gmail.com']
-  s.description    = 'See GitHub page for longer description.'
-  s.summary        = 'Checks a user\'s staged files for \'forbidden\' words (as determined by the user) '\
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'wielder_of_anor/version'
+
+Gem::Specification.new do |spec|
+  spec.name           = 'wielder_of_anor'
+  spec.version        = WielderOfAnor::VERSION
+  spec.authors        = ['Chris Sellek']
+  spec.email          = ['iamsellek@gmail.com']
+
+  spec.summary        = 'Checks a user\'s staged files for \'forbidden\' words (as determined by the user) '\
                      'and, if any are found, alerts the user to the locations of said words.'
-  s.homepage       = 'https://github.com/iamsellek/wielder_of_anor'
-  s.license        = 'MIT'
-  s.files          = `git ls-files`.split($/)
-  s.executables    = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  s.test_files     = []
-  s.require_paths  = ['lib']
+  spec.description    = 'See GitHub page for longer description.'
+  spec.homepage       = 'https://github.com/iamsellek/wielder_of_anor'
+  spec.license        = 'MIT'
 
-  s.add_dependency 'rainbow'
+  spec.files          = `git ls-files`.split($/)
+  spec.executables    = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files     = []
+  spec.require_paths  = ['lib']
 
-  s.add_development_dependency 'bundler'
+  spec.add_dependency 'rainbow'
+
+  spec.add_development_dependency 'bundler', '~> 1.12'
+  spec.add_development_dependency 'rake', '~> 10.0'
 end
