@@ -222,6 +222,32 @@ module WielderOfAnor
       forbidden_words_file.close
     end
 
+    def add_forbidden_word(word)
+      set_app_directory
+      config = YAML.load_file("#{@app_directory}/lib/config.yaml")
+      forbidden_words_file = File.open(config['forbidden_words_file_location'], 'a')
+      get_forbidden_words(config['forbidden_words_file_location'])
+
+      if word.nil?
+        lines_pretty_print Rainbow('Please submit your word as a second parameter.').red
+
+        abort
+      end
+
+      if @forbidden_words.include?(word)
+        lines_pretty_print Rainbow("''#{word}'' is already a forbidden word!").red
+
+        abort
+      end
+
+      forbidden_words_file.puts word
+      forbidden_words_file.close
+
+      lines_pretty_print 'Added!'
+
+      abort
+    end
+
     def wielder_of_anor
       found_forbidden = false
 
