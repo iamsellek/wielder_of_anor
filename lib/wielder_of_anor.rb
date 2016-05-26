@@ -4,6 +4,12 @@ require 'rainbow'
 
 module WielderOfAnor
   class WielderOfAnor
+    def initialize
+      set_app_directory
+
+      @forbidden_words = []
+    end
+
     ##############################################################################
     ##############################################################################
     ##                                                                          ##
@@ -16,12 +22,6 @@ module WielderOfAnor
     ##                                                                          ##
     ##############################################################################
     ##############################################################################
-
-    def initialize
-      set_app_directory
-
-      @forbidden_words = []
-    end
 
     def prepare(commit_message, force_commit)
       set_app_directory
@@ -282,7 +282,7 @@ module WielderOfAnor
               if line.include?(word)
                 found_forbidden = true
                 lines_pretty_print "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --"
-                lines_pretty_print "   #{line.strip!}"
+                lines_pretty_print "   #{line}"
                 double_space
               end
             end
