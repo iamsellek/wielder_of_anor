@@ -281,8 +281,8 @@ module WielderOfAnor
             @forbidden_words.each do |word|
               if line.include?(word)
                 found_forbidden = true
-                lines_pretty_print "-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --"
-                lines_pretty_print "   #{line}"
+                lines_pretty_print Rainbow("-- FORBIDDEN WORD FOUND ON LINE #{index} IN #{files_changed_line.strip}: --").red
+                lines_pretty_print Rainbow("   #{line}").yellow
                 double_space
               end
             end
