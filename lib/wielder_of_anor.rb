@@ -47,8 +47,7 @@ module WielderOfAnor
       git_diff
 
       @files_changed_file = File.open(@files_changed_file_location, "r")
-
-      get_forbidden_words(config['forbidden_words'])
+      @forbidden_words = config['forbidden_words']
     end
 
     def help
@@ -78,20 +77,18 @@ module WielderOfAnor
       set_app_directory
       config = YAML.load_file("#{@app_directory}/lib/config.yaml")
 
-      unless config
+      unless config && config['forbidden_words']
         lines_pretty_print Rainbow('You have yet to set your forbidden words! Please run the app with the parameter '\
                                    '\'config\' to set up your configurations and forbidden words.').red
 
         abort
       end
 
-      get_forbidden_words(config['forbidden_words'])
-
       lines_pretty_print Rainbow('Your forbidden words are:').yellow
 
       single_space
 
-      @forbidden_words.each do |word|
+      config['forbidden_words'].each do |word|
         lines_pretty_print Rainbow(word).yellow
       end
 
@@ -225,17 +222,9 @@ module WielderOfAnor
       bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
     end
 
-    def get_forbidden_words(forbidden_words_yaml)
-      forbidden_words_yaml.each_value do |value|
-        @forbidden_words << value
-      end
-    end
-
     def add_forbidden_word(word)
       set_app_directory
       config = YAML.load_file("#{@app_directory}/lib/config.yaml")
-      forbidden_words_file = File.open(config['forbidden_words_file_location'], 'a')
-      get_forbidden_words(config['forbidden_words_file_location'])
 
       if word.nil?
         lines_pretty_print Rainbow('Please submit your word as a second parameter.').red
@@ -243,14 +232,15 @@ module WielderOfAnor
         abort
       end
 
-      if @forbidden_words.include?(word)
+      if config['forbidden_words'].include?(word)
         lines_pretty_print Rainbow("''#{word}'' is already a forbidden word!").red
 
         abort
       end
 
-      forbidden_words_file.puts word
-      forbidden_words_file.close
+      config['forbidden_words'] << word
+
+      YAML.dump(config, "#{@app_directory}/lib/config.yaml")
 
       lines_pretty_print 'Added!'
 
