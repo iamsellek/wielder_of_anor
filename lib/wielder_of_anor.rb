@@ -99,8 +99,8 @@ module WielderOfAnor
 
     # Attempt to restore settings from previous version.
     def restore_settings
-      lines_pretty_print 'I see that I\'ve been recently updated.'
-      lines_pretty_print Rainbow('Would you like to restore the settings from the previous installation?').yellow
+      lines_pretty_print 'I see that you have a previous wielder_of_anor installation on this machine.'
+      lines_pretty_print Rainbow('Would you like to restore its settings?').yellow
 
       answered = false
 
