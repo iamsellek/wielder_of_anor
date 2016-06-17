@@ -250,22 +250,21 @@ module WielderOfAnor
 
     def wielder_of_anor
       found_forbidden = false
+      count = File.foreach(@files_changed_file).inject(0) {|c, line| c+1}
+
+      if count == 0
+        single_space
+
+        lines_pretty_print Rainbow('No files have been added. Please use the git add command to add files to your '\
+                             'commit.').red
+
+        single_space
+
+        abort
+      end
 
       # If we're forcing the commit, don't bother checking for forbidden words.
       unless @force_commit
-        count = File.foreach(@files_changed_file).inject(0) {|c, line| c+1}
-
-        if count == 0
-          single_space
-
-          lines_pretty_print Rainbow('No files have been added. Please use the git add command to add files to your '\
-                             'commit.').red
-
-          single_space
-
-          abort
-        end
-
         single_space
 
         print_header_footer
