@@ -224,7 +224,8 @@ module WielderOfAnor
 
     def add_forbidden_word(word)
       set_app_directory
-      config = YAML.load_file("#{@app_directory}/lib/config.yaml")
+      config_yaml = YAML.load_file("#{@app_directory}/lib/config.yaml")
+      config_file = File.open("#{@app_directory}/lib/config.yaml", 'w')
 
       if word.nil?
         lines_pretty_print Rainbow('Please submit your word as a second parameter.').red
@@ -232,15 +233,15 @@ module WielderOfAnor
         abort
       end
 
-      if config['forbidden_words'].include?(word)
+      if config_yaml['forbidden_words'].include?(word)
         lines_pretty_print Rainbow("''#{word}'' is already a forbidden word!").red
 
         abort
       end
 
-      config['forbidden_words'] << word
+      config_yaml['forbidden_words'] << word
 
-      YAML.dump(config, "#{@app_directory}/lib/config.yaml")
+      YAML.dump(config_yaml, config_file)
 
       lines_pretty_print 'Added!'
 
