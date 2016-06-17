@@ -1,3 +1,3 @@
-module WielderOfAnor
-  VERSION = "0.2.2"
+module WielderOfAnorVersion
+  VERSION = "0.3.0"
 end

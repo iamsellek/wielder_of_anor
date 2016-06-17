@@ -1,9 +1,14 @@
 require 'shellwords'
 require 'yaml'
 require 'rainbow'
+require 'fileutils'
+
+require_relative 'wielder_of_anor/version'
 
 module WielderOfAnor
   class WielderOfAnor
+    include WielderOfAnorVersion
+
     def initialize
       set_app_directory
 
@@ -24,8 +29,9 @@ module WielderOfAnor
     ##############################################################################
 
     def prepare(commit_message, force_commit)
-      set_app_directory
-
+      # If there's just one, it's the current version. Don't run if the current config is present.
+      restore_settings if Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*").length > 1 &&
+                          !(File.exists?("#{@app_directory}/lib/config.yaml"))
       first_run unless File.exists?("#{@app_directory}/lib/config.yaml")
 
       config = YAML.load_file("#{@app_directory}/lib/config.yaml")
@@ -42,7 +48,7 @@ module WielderOfAnor
 
       @files_changed_file = File.open(@files_changed_file_location, "r")
 
-      get_forbidden_words(config['forbidden_words_file_location'])
+      get_forbidden_words(config['forbidden_words'])
     end
 
     def help
@@ -79,7 +85,7 @@ module WielderOfAnor
         abort
       end
 
-      get_forbidden_words(config['forbidden_words_file_location'])
+      get_forbidden_words(config['forbidden_words'])
 
       lines_pretty_print Rainbow('Your forbidden words are:').yellow
 
@@ -94,51 +100,58 @@ module WielderOfAnor
       abort
     end
 
+    # Attempt to restore settings from previous version.
+    def restore_settings
+      lines_pretty_print 'I see that I\'ve been recently updated.'
+      lines_pretty_print Rainbow('Would you like to restore the settings from the previous installation?').yellow
+
+      answered = false
+
+      until answered
+        answer = STDIN.gets.strip!
+
+        single_space
+
+        if answer == 'yes' || answer == 'y' || answer == 'no' || answer == 'n'
+          answered = true
+        else
+          lines_pretty_print Rainbow('Please input either \'yes\' or \'no\'.').yellow
+        end
+      end
+
+      return if answer == 'no' || answer == 'n'
+
+      lines_pretty_print 'One moment, please.'
+
+      single_space
+
+      all_gems = Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*")
+
+      # glob orders things in the array alphabetically, so the second-to-last one in the array is the
+      # most recent version that is not the current version.
+      previous_config_file = "#{all_gems[-2]}/lib/config.yaml"
+      FileUtils.copy_file(previous_config_file, "#{@app_directory}/lib/config.yaml")
+
+      lines_pretty_print 'Done! Please run me again when you\'re ready.'
+
+      abort
+    end
+
     def first_run
       lines_pretty_print 'Thanks for downloading Wielder of Anor! Let\'s run through the '\
            'initial setup!'
-      lines_pretty_print Rainbow('**Please ensure your file locations are correct. Wielder of Anor '\
-           'does not currently check your input for validity.**').red
 
       STDIN.gets
 
-      files_changed_file_location = set_files_changed_file_location
-
-      forbidden_words_file_location = set_forbidden_words_file_location
+      files_changed_file_location = "#{@app_directory}/lib/files_changed"
 
       commit_for_user = set_commit_for_user
 
       single_space
 
-      set_configs(files_changed_file_location, forbidden_words_file_location, commit_for_user)
+      forbidden_words = set_forbidden_words
 
-      set_forbidden_words(forbidden_words_file_location)
-    end
-
-    def set_files_changed_file_location
-      set_app_directory
-
-      lines_pretty_print 'Whenever you run Wielder of Anor, it will first run a git diff and '\
-           'export the results to a file (so that it\'s only checking the files '\
-           'you have actually changed and not your entire code base!). Where '\
-           'would you like that file to be located?'
-      lines_pretty_print Rainbow('(Just hit enter to accept the default, which is'\
-           " #{@app_directory}/lib/files_changed.)").yellow
-      files_changed_file_location = STDIN.gets.strip!
-      files_changed_file_location = "#{@app_directory}/lib/files_changed" if files_changed_file_location == ''
-
-      files_changed_file_location
-    end
-
-    def set_forbidden_words_file_location
-      lines_pretty_print 'Your \'forbidden words\' are stored in a file. Where would like that'\
-           ' file to be located?'
-      lines_pretty_print Rainbow('(Just hit enter to accept the default, which is'\
-           " #{@app_directory}/lib/forbidden_words.)").yellow
-      forbidden_words_file_location = STDIN.gets.strip!
-      forbidden_words_file_location = "#{@app_directory}/lib/forbidden_words" if forbidden_words_file_location == ""
-
-      forbidden_words_file_location
+      set_configs(files_changed_file_location, forbidden_words, commit_for_user)
     end
 
     def set_commit_for_user
@@ -157,25 +170,30 @@ module WielderOfAnor
       commit_for_user
     end
 
-    def set_configs(files_changed_file_location, forbidden_words_file_location, commit_for_user)
+    def set_configs(files_changed_file_location, forbidden_words, commit_for_user)
       config = {}
       config['files_changed_file_location'] = files_changed_file_location
-      config['forbidden_words_file_location'] = forbidden_words_file_location
 
       if commit_for_user == 'yes' || commit_for_user == 'y'
         config['commit_for_user'] = true
-      elsif commit_for_user == 'no' || commit_for_user == 'n'
+      else
         config['commit_for_user'] = false
       end
+
+      config['forbidden_words'] = forbidden_words
 
       file = File.open("#{@app_directory}/lib/config.yaml", 'w')
       YAML.dump(config, file)
       file.close
+
+      lines_pretty_print 'And with that, we\'re done! Feel free to run Wielder of Anor again if'\
+           ' you\'d like to check your code now!'
+
+      abort
     end
 
-    def set_forbidden_words(forbidden_words_file_location)
-      forbidden_words_file = File.open(forbidden_words_file_location, 'w')
-      forbidden_words_count = 0
+    def set_forbidden_words
+      forbidden_words = []
 
       done = false
 
@@ -185,41 +203,32 @@ module WielderOfAnor
 
       until done do
         lines_pretty_print Rainbow('Enter a forbidden word and hit enter. If you are done entering '\
-                           'forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words_count > 0
+                           'forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words.count > 0
 
         lines_pretty_print Rainbow('Added! Enter another forbidden word and hit enter. If you are done '\
-                                   'entering forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words_count == 0
+                                   'entering forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words.count == 0
         word = STDIN.gets.strip!
+
         single_space
 
         if word == 'x211'
           done = true
         else
-          forbidden_words_file.puts word
-          forbidden_words_count += 1
+          forbidden_words << word
         end
       end
 
-      forbidden_words_file.close
-
-      lines_pretty_print 'And with that, we\'re done! Feel free to run Wielder of Anor again if'\
-           ' you\'d like to check your code now!'
-
-      abort
+      forbidden_words
     end
 
     def git_diff
       bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
     end
 
-    def get_forbidden_words(file_location)
-      forbidden_words_file = File.open(file_location)
-
-      forbidden_words_file.each_line do |line|
-        @forbidden_words << line.strip
+    def get_forbidden_words(forbidden_words_yaml)
+      forbidden_words_yaml.each_value do |value|
+        @forbidden_words << value
       end
-
-      forbidden_words_file.close
     end
 
     def add_forbidden_word(word)

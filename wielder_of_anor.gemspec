@@ -5,7 +5,7 @@ require 'wielder_of_anor/version'
 
 Gem::Specification.new do |spec|
   spec.name           = 'wielder_of_anor'
-  spec.version        = WielderOfAnor::VERSION
+  spec.version        = WielderOfAnorVersion::VERSION
   spec.authors        = ['Chris Sellek']
   spec.email          = ['iamsellek@gmail.com']
 
