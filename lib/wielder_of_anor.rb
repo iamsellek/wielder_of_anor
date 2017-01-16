@@ -127,7 +127,11 @@ module WielderOfAnor
       # glob orders things in the array alphabetically, so the second-to-last one in the array is the
       # most recent version that is not the current version.
       previous_config_file = "#{all_gems[-2]}/lib/config.yaml"
-      FileUtils.copy_file(previous_config_file, "#{@app_directory}/lib/config.yaml")
+      config = YAML.load_file(previous_config_file)
+      new_config_file = File.open("#{@app_directory}/lib/config.yaml", 'w')
+
+      YAML.dump(config, new_config_file)
+      new_config_file.close
 
       lines_pretty_print 'Done! Please run me again when you\'re ready.'
 
@@ -272,8 +276,10 @@ module WielderOfAnor
         single_space
 
         @files_changed_file.each_line do |files_changed_line|
-          code_file = File.open("#{@current_directory}/#{files_changed_line.strip}", "r")
+          file_path = "#{@current_directory}/#{files_changed_line.strip}"
+          code_file = File.open(file_path, "r") if File.exists?(file_path)
           index = 0
+          next unless code_file
 
           code_file.each_line do |line|
             index += 1
