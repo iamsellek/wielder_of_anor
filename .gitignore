@@ -4,3 +4,4 @@ config/config.yaml
 Gemfile.lock
 .idea
 .bundle
+.pkg

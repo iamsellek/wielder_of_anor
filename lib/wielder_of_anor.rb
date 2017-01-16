@@ -2,12 +2,14 @@ require 'shellwords'
 require 'yaml'
 require 'rainbow'
 require 'fileutils'
+require 'iamsellek_cl_helper'
 
 require_relative 'wielder_of_anor/version'
 
 module WielderOfAnor
   class WielderOfAnor
     include WielderOfAnorVersion
+    include IamsellekClHelper
 
     def initialize
       set_app_directory
@@ -30,8 +32,9 @@ module WielderOfAnor
 
     def prepare(commit_message, force_commit)
       # If there's just one, it's the current version. Don't run if the current config is present.
-      restore_settings if Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*").length > 1 &&
-                          !(File.exists?("#{@app_directory}/lib/config.yaml"))
+      restore_settings('wielder_of_anor', VERSION) if
+        Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*").length > 1 &&
+        !(File.exists?("#{@app_directory}/lib/config.yaml"))
       first_run unless File.exists?("#{@app_directory}/lib/config.yaml")
 
       config = YAML.load_file("#{@app_directory}/lib/config.yaml")
@@ -93,47 +96,6 @@ module WielderOfAnor
       end
 
       single_space
-
-      abort
-    end
-
-    # Attempt to restore settings from previous version.
-    def restore_settings
-      lines_pretty_print 'I see that you have a previous wielder_of_anor installation on this machine.'
-      lines_pretty_print Rainbow('Would you like to restore its settings?').yellow
-
-      answered = false
-
-      until answered
-        answer = STDIN.gets.strip!
-
-        single_space
-
-        if answer == 'yes' || answer == 'y' || answer == 'no' || answer == 'n'
-          answered = true
-        else
-          lines_pretty_print Rainbow('Please input either \'yes\' or \'no\'.').yellow
-        end
-      end
-
-      return if answer == 'no' || answer == 'n'
-
-      lines_pretty_print 'One moment, please.'
-
-      single_space
-
-      all_gems = Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*")
-
-      # glob orders things in the array alphabetically, so the second-to-last one in the array is the
-      # most recent version that is not the current version.
-      previous_config_file = "#{all_gems[-2]}/lib/config.yaml"
-      config = YAML.load_file(previous_config_file)
-      new_config_file = File.open("#{@app_directory}/lib/config.yaml", 'w')
-
-      YAML.dump(config, new_config_file)
-      new_config_file.close
-
-      lines_pretty_print 'Done! Please run me again when you\'re ready.'
 
       abort
     end
@@ -204,15 +166,15 @@ module WielderOfAnor
 
       until done do
         lines_pretty_print Rainbow('Enter a forbidden word and hit enter. If you are done entering '\
-                           'forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words.count > 0
+                           'forbidden words just hit enter instead.').yellow unless forbidden_words.count > 0
 
         lines_pretty_print Rainbow('Added! Enter another forbidden word and hit enter. If you are done '\
-                                   'entering forbidden words, type \'x211\' and hit enter instead.').yellow unless forbidden_words.count == 0
+                                   'entering forbidden words, just hit enter instead.').yellow unless forbidden_words.count == 0
         word = STDIN.gets.strip!
 
         single_space
 
-        if word == 'x211'
+        if word == ''
           done = true
         else
           forbidden_words << word
@@ -223,7 +185,7 @@ module WielderOfAnor
     end
 
     def git_diff
-      bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
+      bash(@current_directory, "git diff HEAD --name-only --staged > #{@files_changed_file_location}")
     end
 
     def add_forbidden_word(word)
@@ -355,17 +317,11 @@ module WielderOfAnor
       single_space
 
       if input == 'yes' || input == 'y'
-        bash(%Q[git commit -m "#{@commit_message}"])
+        bash(@current_directory, %Q[git commit -m "#{@commit_message}"])
         single_space
         lines_pretty_print 'Committed.'
         single_space
       end
-    end
-
-    def bash(command)
-      # Dir.chdir ensures all bash commands are being run from the correct
-      # directory.
-      Dir.chdir(@current_directory) { system "#{command}" }
     end
 
     def set_app_directory
