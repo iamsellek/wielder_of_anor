@@ -31,9 +31,8 @@ module WielderOfAnor
 
     def prepare(commit_message, force_commit)
       # If there's just one, it's the current version. Don't run if the current config is present.
-      restore_settings('wielder_of_anor', VERSION) if
-        Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*").length > 1 &&
-        !(File.exists?("#{@app_directory}/lib/config.yaml"))
+      restore_woa_settings if Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*").length > 1 &&
+                              !(File.exists?("#{@app_directory}/lib/config.yaml"))
       first_run unless File.exists?("#{@app_directory}/lib/config.yaml")
 
       config = YAML.load_file("#{@app_directory}/lib/config.yaml")
@@ -42,6 +41,9 @@ module WielderOfAnor
       @current_directory = Dir.pwd
       @files_changed_file_location = config['files_changed_file_location']
       @commit_for_user = config['commit_for_user']
+      @check_branch = config['check_branch']
+      @branches_to_check = config['branches_to_check']
+      @current_branch_file_location = "#{@app_directory}/lib/current_branch"
 
       # Don't want to use a previous version.
       File.delete(@files_changed_file_location) if File.exists?(@files_changed_file_location)
@@ -109,11 +111,15 @@ module WielderOfAnor
 
       commit_for_user = set_commit_for_user
 
+      check_branch = set_check_branch
+
+      branches_to_check = set_branches_to_check if check_branch == 'yes' || check_branch == 'y'
+
       single_space
 
       forbidden_words = set_forbidden_words
 
-      set_configs(files_changed_file_location, forbidden_words, commit_for_user)
+      set_configs(files_changed_file_location, forbidden_words, commit_for_user, check_branch, branches_to_check)
     end
 
     def set_commit_for_user
@@ -129,10 +135,57 @@ module WielderOfAnor
         commit_for_user = STDIN.gets.strip!.downcase
       end
 
+      single_space
+
       commit_for_user
     end
 
-    def set_configs(files_changed_file_location, forbidden_words, commit_for_user)
+    def set_check_branch
+      lines_pretty_print 'Would you like Wielder of Anor to stop you from committing to a certain branch or branches?'
+      lines_pretty_print Rainbow('(Type \'yes\' or \'no\'. Just hitting enter defaults to no.)').yellow
+
+      check_branch = STDIN.gets.strip!.downcase
+      check_branch = 'no' if check_branch == ''
+
+      until check_branch == 'yes' || check_branch =='y' || check_branch == 'no' || check_branch == 'n' do
+        lines_pretty_print Rainbow('Please type either \'yes\' or \'no\'.').yellow
+        check_branch = STDIN.gets.strip!.downcase
+      end
+
+      single_space
+
+      check_branch
+    end
+
+    def set_branches_to_check
+      branches_to_check = []
+
+      done = false
+
+      lines_pretty_print 'Sounds good! What branches should I block you from committing to?'
+      single_space
+
+      until done do
+        lines_pretty_print Rainbow('Enter a forbidden branch and hit enter. If you are done entering forbidden '\
+                                   'branches, just hit enter instead.').yellow unless branches_to_check.count > 0
+
+        lines_pretty_print Rainbow('Added! Enter another forbidden branch and hit enter. If you are done '\
+                                   'entering forbidden branches, just hit enter instead.').yellow unless branches_to_check.count == 0
+        branch = STDIN.gets.strip!
+
+        single_space
+
+        if branch == ''
+          done = true
+        else
+          branches_to_check << branch
+        end
+      end
+
+      branches_to_check
+    end
+
+    def set_configs(files_changed_file_location, forbidden_words, commit_for_user, check_branch, branches_to_check)
       config = {}
       config['files_changed_file_location'] = files_changed_file_location
 
@@ -140,6 +193,14 @@ module WielderOfAnor
         config['commit_for_user'] = true
       else
         config['commit_for_user'] = false
+      end
+
+      if check_branch == 'yes' || check_branch == 'y'
+        config['check_branch'] = true
+        config['branches_to_check'] = branches_to_check
+      else
+        config['check_branch'] = false
+        config['branches_to_check'] = []
       end
 
       config['forbidden_words'] = forbidden_words
@@ -159,7 +220,7 @@ module WielderOfAnor
 
       done = false
 
-      lines_pretty_print 'Great! Now that we\'re done with the files, let\'s add your forbidden '\
+      lines_pretty_print 'Great! Now that we\'re done with that, let\'s add your forbidden '\
                          'words from here!'
       single_space
 
@@ -300,6 +361,19 @@ module WielderOfAnor
     end
 
     def commit
+      if @check_branch
+        bash(@current_directory, "git rev-parse --abbrev-ref HEAD > #{@current_branch_file_location}")
+        current_branch = File.open(@current_branch_file_location, "r").read.strip!
+
+        if @branches_to_check.include?(current_branch)
+          lines_pretty_print Rainbow('I\'m sorry, Dave, but I can\'t allow you to do that.').red
+          lines_pretty_print Rainbow('You have tried committing to a forbidden branch. Danger, Will Robinson! Danger! '\
+                                     'Aborting!').red
+
+          abort
+        end
+      end
+
       if @force_commit
         lines_pretty_print 'Skipped checking for forbidden words. Ready to commit now?'
         lines_pretty_print Rainbow('**WARNING: YOU ARE FORCING THE COMMIT WITHOUT CHECKING FOR FORBIDDEN WORDS.**').red
@@ -327,18 +401,45 @@ module WielderOfAnor
       @app_directory = File.expand_path(File.dirname(__FILE__)).chomp('/lib')
     end
 
-    def lines_pretty_print(string)
-      lines = string.scan(/\S.{0,70}\S(?=\s|$)|\S+/)
+    def restore_woa_settings
+      lines_pretty_print 'I see that you have a previous wielder_of_anor installation on this machine.'
+      lines_pretty_print Rainbow('Would you like to restore its settings?').yellow
 
-      lines.each { |line| puts line }
-    end
+      answered = false
 
-    def single_space
-      puts ''
-    end
+      until answered
+        answer = STDIN.gets.strip!
 
-    def double_space
-      puts "\n\n"
+        single_space
+
+        if answer == 'yes' || answer == 'y' || answer == 'no' || answer == 'n'
+          answered = true
+        else
+          lines_pretty_print Rainbow('Please input either \'yes\' or \'no\'.').yellow
+        end
+      end
+
+      return if answer == 'no' || answer == 'n'
+
+      lines_pretty_print 'One moment, please.'
+
+      single_space
+
+      all_gems = Dir.glob("#{@app_directory.chomp("/wielder_of_anor-#{VERSION}")}/wielder_of_anor*")
+
+      # glob orders things in the array alphabetically, so the second-to-last one in the array is the
+      # most recent version that is not the current version.
+      previous_config_file = "#{all_gems[-2]}/lib/config.yaml"
+      config = YAML.load_file(previous_config_file)
+      config['files_changed_file_location'] = "#{@app_directory}/lib/files_changed"
+      new_config_file = File.open("#{@app_directory}/lib/config.yaml", 'w')
+
+      YAML.dump(config, new_config_file)
+      new_config_file.close
+
+      lines_pretty_print 'Done! Please run me again when you\'re ready.'
+
+      abort
     end
   end
 end
