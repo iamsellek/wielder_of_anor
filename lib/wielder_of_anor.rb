@@ -1,6 +1,5 @@
 require 'shellwords'
 require 'yaml'
-require 'rainbow'
 require 'fileutils'
 require 'iamsellek_cl_helper'
 
