@@ -1,14 +1,13 @@
 require 'shellwords'
 require 'yaml'
 require 'fileutils'
-require 'iamsellek_cl_helper'
+require 'rainbow'
 
 require_relative 'wielder_of_anor/version'
 
 module WielderOfAnor
   class WielderOfAnor
     include WielderOfAnorVersion
-    include IamsellekClHelper
 
     def initialize
       set_app_directory
@@ -245,7 +244,7 @@ module WielderOfAnor
     end
 
     def git_diff
-      bash(@current_directory, "git diff HEAD --name-only --staged > #{@files_changed_file_location}")
+      bash("git diff HEAD --name-only --staged > #{@files_changed_file_location}")
     end
 
     def add_forbidden_word(word)
@@ -362,7 +361,7 @@ module WielderOfAnor
 
     def commit
       if @check_branch
-        bash(@current_directory, "git rev-parse --abbrev-ref HEAD > #{@current_branch_file_location}")
+        bash("git rev-parse --abbrev-ref HEAD > #{@current_branch_file_location}")
         current_branch = File.open(@current_branch_file_location, "r").read.strip!
 
         if @branches_to_check.include?(current_branch)
@@ -390,7 +389,7 @@ module WielderOfAnor
       single_space
 
       if input == 'yes' || input == 'y'
-        bash(@current_directory, %Q[git commit -m "#{@commit_message}"])
+        bash(%Q[git commit -m "#{@commit_message}"])
         single_space
         lines_pretty_print 'Committed.'
         single_space
@@ -440,6 +439,26 @@ module WielderOfAnor
       lines_pretty_print 'Done! Please run me again when you\'re ready.'
 
       abort
+    end
+
+    def bash(command)
+      # Dir.chdir ensures all bash commands are being run from the correct
+      # directory.
+      Dir.chdir(@current_directory) { system "#{command}" }
+    end
+
+    def lines_pretty_print(string)
+      lines = string.scan(/\S.{0,70}\S(?=\s|$)|\S+/)
+
+      lines.each { |line| puts line }
+    end
+
+    def single_space
+      puts ''
+    end
+
+    def double_space
+      puts "\n\n"
     end
   end
 end
