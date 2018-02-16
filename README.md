@@ -1,6 +1,7 @@
 # Wielder of Anor
 Checks a user's staged files for "forbidden" words (as determined by the user)
-and, if any are found, alerts the user to the locations of said words.
+and, if any are found, alerts the user to the locations of said words. Also 
+allows users to block certain branches from being pushed to.
 
 ## Longer Description
 I am absent-minded. Very absent-minded. Absent-minded to the point that I'll
@@ -50,9 +51,7 @@ The first argument can be:
   to run your commits for you, this argument will be ignored.
 * 'help' - This will simply print out shorter versions of the options you are
   currently reading.
-* 'config' - This will re-run the configuration process. IF YOU SET ANY OF YOUR
-  FILE LOCATIONS TO POINT TO PREVIOUSLY EXISTING FILES, THOSE FILES *WILL* BE
-  OVERWRITTEN.
+* 'config' - This will re-run the configuration process.
 * 'words' - This will spit out all of the forbidden words that you currently
   are checking for.
   
